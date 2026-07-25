@@ -8,3 +8,12 @@
 - Data Analytics:- Gold layer-- Azure Synapse SQL pool-- powerBI.
 - Secrets in Azure key vault is used for storing connection strings.Azure AD is used to provide access to key vaults.
 ## Code simulated for source data
+- import required python modules(random,json,uuid,time)
+- event hub or kafka messages are usually sent as json strings.
+- Kafkaproducer is the actual client which sents messages to event hub.
+- add config names to kafka event hub, namespace and connection strings
+- setup the kafka producer,This creates the connection object that will actually send messages
+- create fake data pools for departments and gender.
+- injecting dirty data ex:-Age>100 and admission time is future time.
+- Generate one fake patient record
+- Then run this event continously, like one per second.

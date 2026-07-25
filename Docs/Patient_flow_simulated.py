@@ -1,3 +1,6 @@
+# import required python modules(random,json,uuid,time)
+#event hub or kafka messages are usually sent as json strings.
+# Kafkaproducer is the actual client which sents messages to event hub.
 import json
 import random
 import uuid
@@ -5,10 +8,12 @@ import time
 from datetime import datetime, timedelta
 from kafka import KafkaProducer
 
-# Event Hub Configuration
+# Event Hub Configuration,- add config names to kafka event hub, namespace and connection strings
+
 EVENTHUBS_NAMESPACE = "<<NAMESPACE_HOSTNAME>>"
 EVENT_HUB_NAME = "<<EVENT_HUB_NAME>>"
 CONNECTION_STRING = "<<NAMESPACE_CONNECTION_STRING>>"
+# setup thekafka producer,This creates the connection object that will actually send messages
 
 producer = KafkaProducer(
     bootstrap_servers=[f"{EVENTHUBS_NAMESPACE}:9093"],
@@ -34,7 +39,7 @@ def inject_dirty_data(record):
     if random.random() < 0.05:
         record["admission_time"] = (datetime.utcnow() + timedelta(hours=random.randint(1, 72))).isoformat()
     return record
-
+#Generate one fake patient record
 def generate_patient_event():
     admission_time = datetime.utcnow() - timedelta(hours=random.randint(0, 72))
     discharge_time = admission_time + timedelta(hours=random.randint(1, 72))
@@ -49,7 +54,7 @@ def generate_patient_event():
         "hospital_id": random.randint(1, 7)  # Assuming 7 hospitals in network
     }
     return inject_dirty_data(event)
-
+#Run this continously
 if __name__ == "__main__":
     while True:
         event = generate_patient_event()
