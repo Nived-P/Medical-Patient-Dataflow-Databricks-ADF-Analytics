@@ -5,9 +5,9 @@ import time
 from datetime import datetime, timedelta
 from kafka import KafkaProducer
 
-#Eventhub Configuration
+# Event Hub Configuration
 EVENTHUBS_NAMESPACE = "<<NAMESPACE_HOSTNAME>>"
-EVENT_HUB_NAME="<<EVENT_HUB_NAME>>"  
+EVENT_HUB_NAME = "<<EVENT_HUB_NAME>>"
 CONNECTION_STRING = "<<NAMESPACE_CONNECTION_STRING>>"
 
 producer = KafkaProducer(
@@ -22,26 +22,22 @@ producer = KafkaProducer(
 # Departments in hospital
 departments = ["Emergency", "Surgery", "ICU", "Pediatrics", "Maternity", "Oncology", "Cardiology"]
 
-# Gender categories 
+# Gender categories
 genders = ["Male", "Female"]
 
 # Helper function to introduce dirty data
 def inject_dirty_data(record):
-
     # 5% chance to have invalid age
     if random.random() < 0.05:
         record["age"] = random.randint(101, 150)
-
     # 5% chance to have future admission timestamp
     if random.random() < 0.05:
-        record["admission_time"] = (datetime.utcnow()+ timedelta(hours=random.randint(1, 72))).isoformat()
-
+        record["admission_time"] = (datetime.utcnow() + timedelta(hours=random.randint(1, 72))).isoformat()
     return record
 
 def generate_patient_event():
     admission_time = datetime.utcnow() - timedelta(hours=random.randint(0, 72))
     discharge_time = admission_time + timedelta(hours=random.randint(1, 72))
-
     event = {
         "patient_id": str(uuid.uuid4()),
         "gender": random.choice(genders),
@@ -52,7 +48,6 @@ def generate_patient_event():
         "bed_id": random.randint(1, 500),
         "hospital_id": random.randint(1, 7)  # Assuming 7 hospitals in network
     }
-
     return inject_dirty_data(event)
 
 if __name__ == "__main__":
@@ -61,5 +56,3 @@ if __name__ == "__main__":
         producer.send(EVENT_HUB_NAME, event)
         print(f"Sent to Event Hub: {event}")
         time.sleep(1)
-
-#example
