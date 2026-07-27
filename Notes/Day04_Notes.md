@@ -16,4 +16,6 @@ CONNECTION_STRING = "<<NAMESPACE_CONNECTION_STRING>>"
 
 - edited the .py file, but to run it python isnt installed in the system yet.So raised access via software centre.(23:00)
 - Without wasting time forwarding video and looking up for setup of storage account,databricks account and ADF.
-- 
+- Created Azure databricks and deployed in Central India.South India doesnt support here, so need to apply this change in case of azure event hub ns as well.
+- Created new Azure event hub namespace and event hub in central india and added the credentials to Patient_flow_simulated_local.py
+- Installed python and need to verify..Storage account creation pending, after that will run the simualtor script to load fake data in event hub and to generate one record per second from event hub.
