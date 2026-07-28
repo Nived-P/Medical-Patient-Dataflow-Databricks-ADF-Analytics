@@ -1,27 +1,20 @@
 # import required python modules(random,json,uuid,time)
 #event hub or kafka messages are usually sent as json strings.
-# Kafkaproducer is the actual client which sents messages to event hub.
+# azure event hub is azure official SDK for event hub.
 import json
 import random
 import uuid
 import time
 from datetime import datetime, timedelta
-from kafka import KafkaProducer
+from azure.eventhub import EventHubProducerClient, EventData
 
-# Event Hub Configuration,- add config names to kafka event hub, namespace and connection strings
-
-EVENTHUBS_NAMESPACE = "<<NAMESPACE_HOSTNAME>>"
-EVENT_HUB_NAME = "<<EVENT_HUB_NAME>>"
+# Event Hub Configuration
 CONNECTION_STRING = "<<NAMESPACE_CONNECTION_STRING>>"
-# setup thekafka producer,This creates the connection object that will actually send messages
+EVENT_HUB_NAME = "<<EVENT_HUB_NAME>>"
 
-producer = KafkaProducer(
-    bootstrap_servers=[f"{EVENTHUBS_NAMESPACE}:9093"],
-    security_protocol="SASL_SSL",
-    sasl_mechanism="PLAIN",
-    sasl_plain_username="$ConnectionString",
-    sasl_plain_password=CONNECTION_STRING,
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+producer = EventHubProducerClient.from_connection_string(
+    conn_str=CONNECTION_STRING,
+    eventhub_name=EVENT_HUB_NAME
 )
 
 # Departments in hospital
@@ -56,8 +49,15 @@ def generate_patient_event():
     return inject_dirty_data(event)
 #Run this continously
 if __name__ == "__main__":
-    while True:
-        event = generate_patient_event()
-        producer.send(EVENT_HUB_NAME, event)
-        print(f"Sent to Event Hub: {event}")
-        time.sleep(1)
+    try:
+        while True:
+            event = generate_patient_event()
+            event_data_batch = producer.create_batch()
+            event_data_batch.add(EventData(json.dumps(event)))
+            producer.send_batch(event_data_batch)
+            print(f"Sent to Event Hub: {event}")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Stopped by user.")
+    finally:
+        producer.close()
