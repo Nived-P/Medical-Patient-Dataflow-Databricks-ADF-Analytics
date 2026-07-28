@@ -6,7 +6,7 @@ import random
 import uuid
 import time
 from datetime import datetime, timedelta
-from azure.eventhub import EventHubProducerClient, EventData
+from azure.eventhub import EventHubProducerClient, EventData, TransportType
 
 # Event Hub Configuration
 CONNECTION_STRING = "<<NAMESPACE_CONNECTION_STRING>>"
@@ -14,7 +14,8 @@ EVENT_HUB_NAME = "<<EVENT_HUB_NAME>>"
 
 producer = EventHubProducerClient.from_connection_string(
     conn_str=CONNECTION_STRING,
-    eventhub_name=EVENT_HUB_NAME
+    eventhub_name=EVENT_HUB_NAME,
+    transport_type=TransportType.AmqpOverWebsocket
 )
 
 # Departments in hospital
