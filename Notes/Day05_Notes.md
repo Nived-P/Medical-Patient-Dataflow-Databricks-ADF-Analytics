@@ -19,4 +19,8 @@ sample data:Sent to Event Hub: {'patient_id': '8de3ac91-6555-4517-addf-17afbf2d7
 While setting up the real-time ingestion script for Azure Event Hub, the initial approach using the kafka-python library (connecting via Event Hub's Kafka-compatibility layer) consistently failed with connection timeouts, despite verified network reachability (confirmed via Test-NetConnection) and correct credentials. Root cause analysis revealed two layered issues: first, the Event Hub Namespace was on Basic tier, which doesn't support the Kafka protocol at all (requires Standard tier or above); after upgrading to Standard, the kafka-python library still failed due to a likely compatibility issue with Python 3.14 (a very new release, mandated by corporate IT policy). The fix was switching to Microsoft's official azure-eventhub SDK, which uses Event Hub's native AMQP protocol instead of the Kafka-compatibility layer — a more reliable, Microsoft-maintained approach. Even after switching, the AMQP connection was forcibly reset (WinError 10054), pointing to a corporate firewall blocking AMQP's default port (5671); this was resolved by using TransportType.AmqpOverWebsocket, which routes the same AMQP traffic over port 443 (standard HTTPS), and installing the required websocket-client dependency. This troubleshooting reinforced the importance of protocol/transport-layer awareness when working in restrictive corporate network environments.
 
 ## Analysing eventhub about the ingested data:
-- 
+- Able to see 138 event messages generated in 138 seconds.
+## Setting up storage account:
+- Created a storage account and added 4 containers inside it(bronze,silver,gold and synpaseworkspace).
+ ## Databricks workspace:
+ ## Create a cluster:
