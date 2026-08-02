@@ -20,7 +20,7 @@ While setting up the real-time ingestion script for Azure Event Hub, the initial
 
 ## Analysing eventhub about the ingested data:
 - Able to see 138 event messages generated in 138 seconds.
+- to see data : go to event hub--data explorer-- view events.
 ## Setting up storage account:
 - Created a storage account and added 4 containers inside it(bronze,silver,gold and synpaseworkspace).
- ## Databricks workspace:
- ## Create a cluster:
+
