@@ -1,9 +1,9 @@
 from pyspark.sql.functions import *
 
 # Azure Event Hub Configuration
-event_hub_namespace = "<<Namespace_hostname>>"
-event_hub_name = "<<Eventhub_Name>>"
-event_hub_conn_str = "<<Connection_string>>"
+event_hub_namespace = "adb-eventhub-ns.servicebus.windows.net"
+event_hub_name = "hospital-adb-eventhub"
+event_hub_conn_str = dbutils.secrets.get(scope="hospitalanalyticsvaultscope", key="eventhub-connection")
 
 kafka_options = {
     'kafka.bootstrap.servers': f"{event_hub_namespace}:9093",
@@ -27,11 +27,11 @@ json_df = raw_df.selectExpr("CAST(value AS STRING) as raw_json")
 
 #ADLS configuration 
 spark.conf.set(
-  "fs.azure.account.key.<<Storageaccount_name>>.dfs.core.windows.net",
-  "<<Storage_Account_access_key>>"
+  "fs.azure.account.key.hospadbstorageaccount.dfs.core.windows.net",
+  dbutils.secrets.get(scope="hospitalanalyticsvaultscope", key="storge-account-connection")
 )
 
-bronze_path = "abfss://<<container>>@<<Storageaccount_name>>.dfs.core.windows.net/<<path>>"
+bronze_path = "abfss://bronze@hospadbstorageaccount.dfs.core.windows.net/patient_data"
 
 # Write stream to bronze
 (
@@ -42,3 +42,11 @@ bronze_path = "abfss://<<container>>@<<Storageaccount_name>>.dfs.core.windows.ne
     .option("checkpointLocation", f"{bronze_path}/_checkpoints/patient_flow")
     .start(bronze_path)
 )
+# Verifying data rather than from azure containers
+spark.conf.set(
+    "fs.azure.account.key.hospadbstorageaccount.dfs.core.windows.net",
+    dbutils.secrets.get(scope="hospitalanalyticsvaultscope", key="storge-account-connection")
+)
+
+df = spark.read.format("delta").load("abfss://bronze@hospadbstorageaccount.dfs.core.windows.net/patient_data")
+display(df)gi
