@@ -13,3 +13,9 @@
 - Serverless compute has real limitations (can't set raw Hadoop/Spark storage configs) - not a drop-in replacement for all-purpose clusters for all use cases
 - New/upgraded Azure subscriptions often start with 0 default vCPU quota per region/VM family - requires explicit quota increase request before first cluster creation
 - Azure Databricks billing/quota issues sometimes require creating a fresh workspace rather than fixing an existing one, especially after subscription-tier changes
+## Steps After Migration
+- Re-linked Key Vault secret scope to new workspace (same scope name: hospitalanalyticsvaultscope) - no notebook code changes needed
+- Copied bronze notebook (Key Vault-based version) into new workspace, attached to new cluster
+- Ran local simulator + bronze notebook together to test end-to-end
+- Verified success via display(df) - real patient records visible, including intentional dirty data (age: 134)
+- Bronze layer fully functional on new workspace
