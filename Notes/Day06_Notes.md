@@ -26,3 +26,21 @@
 ## notes and tips:
 
 - prepare basic code without actual values in notebook and copy to 01_Bronze_rawdata.py, then duplicate it into 01_Bronze_local_rawdata.py and fill actual values of event hub config,storage account access key.
+
+## Azure key vault setup:
+- pasting the storage account access key directly in databricks notebook is not advised, so we will create azure key vault.
+- The same is applicable to event hub connection string as well
+- So need to do this two workaround in local bronze transformation script.
+- Create Azure key vault in the same central india region.
+- We need keyvault admin(role)access (from IAM) inorder to create secret in keyvault(from objects).
+- Create a secret scope(name-hospitalanalyticsvaultscope)
+- provide keyvault user access to azure databricks 
+- event hub connection and storage account connection are the two secrets created inside vault for storing the two connections.
+- now we need to work related to databricks secret scopes.
+- ## Key Vault Integration
+- Secret Scope name: hospitalanalyticsvaultscope
+- Secret 1: storge-account-connection (storage account access key)
+- Secret 2: eventhub-connection (Event Hub connection string)
+- Replaced hardcoded credentials in notebook with dbutils.secrets.get() calls
+- Benefit: notebook code is now safe to push directly to GitHub without needing a separate _local credentials file
+- In key vault, azure databricks should be provided with role key vault user inorder to read the secret.
