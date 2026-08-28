@@ -1,4 +1,4 @@
-# Azure Data Factory based orchestration (2:12-2:36)
+# Azure Data Factory based orchestration
 - create data factory, name-Hospital-ADF-nibu.Then launch studio for creation of pipeline.
 - Our aim is to run gold databricks notebook.We need to create one more secret(databricks-connection) in existing key vault(Hospital-ADB-vault) for storing the databricks access token.
 - For ADF to access the key vault,provided access control (IAM) to keyvault role "key vault secrets user"  and added ADF as member.
